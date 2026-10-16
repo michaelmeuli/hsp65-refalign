@@ -1,4 +1,4 @@
-# hsp65-refalign-validation
+# hsp65-refalign
 
 **Question:** does plain reference alignment of the routine Sanger hsp65 reads (`mlsa-kansasii`
 `main3_reference_alignment`) identify the *M. kansasii*-complex species of every isolate that has such a
