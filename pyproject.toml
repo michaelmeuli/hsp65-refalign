@@ -3,7 +3,7 @@
 [tool.mypy]
 strict = true
 python_version = "3.11"
-files = ["01_validate_hsp65_refalign.py"]
-mypy_path = "../mlsa-kansasii"
+files = ["hsp65_refalign", "01_validate_hsp65_refalign.py", "02_blast_reads.py"]
+explicit_package_bases = true
 # Biopython ships py.typed but leaves many functions unannotated.
 untyped_calls_exclude = ["Bio"]

@@ -11,4 +11,5 @@ REPO_ROOT="/shares/sander.imm.uzh/MM/kansasii/repos/hsp65-refalign"
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate env_mlsa
 
-python "$REPO_ROOT/01_validate_hsp65_refalign.py"
+cd "$REPO_ROOT"
+python 01_validate_hsp65_refalign.py

@@ -8,36 +8,49 @@ read, once contaminated isolates are excluded?
 `.ab1` in `data/sanger/seq_kansasii` (made by `mlsa-kansasii/scripts/03_link_sanger_kansasii.sh`), assigned
 to its isolate (`PROBENNUMMER`) through all TNR columns, so all reads of an isolate count.
 
+The repo is self-contained: `hsp65_refalign/refalign.py` and `sanger_io.py` are vendored copies of the
+mlsa-kansasii modules (same matching logic, no PDF code), and it aligns the reads itself instead of reading
+main3's output. Only the shared data (`data/`, `runs/`, `output/screening_map_results.csv`) is needed.
+
 ## Run
 
 ```bash
-# prerequisite: mlsa-kansasii main3 has been run (output/mlsa/main3_reference_alignment/reference_alignment.tsv)
-sbatch submit_validate.sbatch      # env_mlsa; about 3 min; log lands in the directory you ran sbatch from
+sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log lands in the directory you ran sbatch from
+python 02_blast_reads.py          # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
 ```
 
-Writes `output/hsp65_refalign_validation/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per
-isolate with its verdict), `SUMMARY.txt`. It imports `mlsa` from the sibling `mlsa-kansasii` repo.
+`01` writes `output/hsp65_refalign/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
+its verdict), `SUMMARY.txt`, `nonmatching_reads.fa`. `02` writes `blast/` there (raw XML, `blast_hits.tsv`,
+`BLAST_SUMMARY.txt`). Paths are in `hsp65_refalign/__init__.py` (root overridable with `KANSASII_ROOT`).
 
 ## Verdicts per isolate
 
-An isolate is **correct** if it has at least one read with main3 status `ok` (>= 98% identity, >= 2 fewer
+An isolate is **correct** if it has at least one read with status `ok` (>= 98% identity, >= 2 fewer
 differences than the next species) and all `ok` reads give the genome species. It is **WRONG** if an `ok` read
 disagrees. Isolates with no `ok` read are **no call**. To say why, each non-`ok` read is also aligned to the
-isolate's own assembly: below 90% identity, the read does not come from that genome.
+isolate's own assembly: below 90% identity, the read does not come from that genome. Traces that are empty or
+< 100 bp after trimming count as unusable.
 
 ## Result (2026-10-16)
 
-See `SUMMARY.txt` in the output directory for the current numbers. Of 127 complex isolates with an hsp65
-read, 2 are contaminated (Mkan329-035, -106; excluded), leaving 125:
+See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 3 are contaminated
+(Mkan329-035, -106, -113) and excluded, leaving 133:
 
-- **109 get a call and all 109 are correct** (0 wrong; kansasii 91, persicum 11, pseudokansasii 4,
-  attenuatum, innocens, ostraviense 1 each).
-- **16 get no call, so the claim "every isolate with an hsp65 read is identified" does not hold.** In 13 the reads
-  are clean traces that match neither the references (~80%) nor the isolate's own assembly (~75-80%): the
-  Sanger sample is not the sequenced isolate (different culture, other organism or mix-up). 2 reads are
-  unusable (too short / no alignment) and 1 isolate (Mkan329-102, persicum) has four 93-94% reads that
-  never reach `ok`.
-- The claim does hold in the form: **no isolate whose hsp65 read matches its own genome is misidentified**.
+- **109 get a call and all 109 are correct** (0 wrong).
+- **24 get no call, so "every isolate with an hsp65 read is identified" does not hold:**
+  - **13: the read does not match the isolate's own genome** (~80% to every reference and ~75-80% to the
+    isolate's assembly) although the trace is clean. These reads fall into two sequence groups
+    (a 16-read group over 9 isolates, 2015-2026, 94-100% identical; a pair from Mkan329-007/-178). BLAST of
+    one read per group (`02_blast_reads.py`) gives ***Rothia mucilaginosa*** (98.9% and 97.6% over the whole
+    read; an oral commensal, so the TB-11/TB-12 primers co-amplify it from the culture or sample). These isolates'
+    genomes are clean (CheckM <= 3.3%) and their 16S/other reads match the complex species, so the hsp65 read
+    is a contaminant read, not a wrong isolate. Only the two representatives were BLASTed; the other reads are
+    assigned to a group by their identity to it.
+  - **10: all reads unusable** (empty or very short traces).
+  - **1: poor reads** (Mkan329-102, persicum: four reads at 93-94%).
+- So the claim holds in the form: **no isolate with a usable hsp65 read of its own culture is misidentified**.
+  The routine fix for the 24 isolates without a call is to repeat the PCR (and for the Rothia ones,
+  use a mycobacteria-specific primer pair or a fresh subculture).
 
-Mkan329-035 (kansasii + ostraviense mixture) is the only `ok` call that disagrees with the genome species;
-it is the excluded contaminated case (`mlsa-kansasii/Mkan329-035_contamination.md`).
+The earlier version of this repo read main3's output, which was older than the linked reads and silently skips
+unusable traces; that gave 125 analysed isolates and 16 no-calls.
