@@ -1,0 +1,9 @@
+# Type-checking config only (this repo is not packaged).
+# Run: mypy   (from the repo root, in an env with mypy + pandas-stubs)
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["01_validate_hsp65_refalign.py"]
+mypy_path = "../mlsa-kansasii"
+# Biopython ships py.typed but leaves many functions unannotated.
+untyped_calls_exclude = ["Bio"]
