@@ -60,6 +60,10 @@ Of 136 isolates with a Sanger hsp65 read, 133 remained after excluding contamina
 | No call, only empty or very short traces | 10 |
 | No call, only poor reads (93 to 94% identity) | 1 |
 
+![Identity and margin of every hsp65 read per genome species](figures/hsp65_identity_margin.png)
+
+**Figure 1.** Each point is one hsp65 read of an uncontaminated isolate, grouped by genome species. **A**, identity to the closest reference; filled points are `ok` reads (coloured by species), open grey points are reads without a call (44 reads: *Rothia*, poor and failed reads). **B**, number of differences between the closest and the next-closest species, for `ok` reads. Dashed lines are the calling thresholds. The two groups are separated by a gap: every `ok` read is at 98.26% or above, no other read exceeds 96.55%, and the smallest margin is 3 differences.
+
 The 109 correct isolates had 197 ok reads (median 379 bp, 99.5% identity, median margin 8 differences, minimum 3). All 197 named the genome species. For the 72 isolates with two or more ok reads (forward and reverse, or repeats) the reads never disagreed.
 
 ### 3.4 What the 24 no-calls are

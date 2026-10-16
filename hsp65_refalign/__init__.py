@@ -3,6 +3,10 @@ from pathlib import Path
 
 SPECIES = ["kansasii", "persicum", "pseudokansasii", "innocens", "attenuatum", "ostraviense", "gastri"]
 
+# fixed colour per species (same as mlsa-kansasii) so figures stay comparable
+SPECIES_COLORS = {"kansasii": "#1b9e77", "persicum": "#d95f02", "pseudokansasii": "#7570b3", "innocens": "#e7298a",
+                  "attenuatum": "#66a61e", "ostraviense": "#e6ab02", "gastri": "#a6761d"}
+
 # Everything lives under the shared kansasii tree; repos/<this repo> sits two levels below it.
 ROOT = Path(os.environ.get("KANSASII_ROOT", Path(__file__).resolve().parent.parent.parent.parent))
 DATA = ROOT / "data"

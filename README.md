@@ -17,6 +17,7 @@ main3's output. Only the shared data (`data/`, `runs/`, `output/screening_map_re
 ```bash
 sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log lands in the directory you ran sbatch from
 python 02_blast_reads.py          # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
+python 03_figure.py               # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
 ```
 
 `01` writes `output/hsp65_refalign/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
