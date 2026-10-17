@@ -16,7 +16,7 @@ from pathlib import Path
 import pandas as pd
 from Bio import SeqIO
 
-from hsp65_refalign import ASSEMBLIES, HSP65_AMPLICONS, OUTPUT, SCREENING_RESULTS, SPECIES
+from hsp65_refalign import ASSEMBLIES, HSP65_AMPLICONS, OUTPUT, REFERENCE_STRAINS, SCREENING_RESULTS, SPECIES
 from hsp65_refalign.refalign import Reference, align_to_reference
 
 PROBES = {"korean": "GCF_002705785.1", "kansasii_ref": "GCF_000157895.3", "persicum_ref": "GCF_002086675.1"}
@@ -42,7 +42,7 @@ def main() -> None:
     print(f"Korean amplicon vs kansasii reference: {kor_vs_ref} differences", flush=True)
     s = pd.read_csv(SCREENING_RESULTS, dtype=str).fillna("")
     rows: list[dict[str, object]] = []
-    for _, t in s[s["species"].isin(SPECIES)].iterrows():
+    for _, t in s[s["species"].isin(SPECIES) & ~s["PROBENNUMMER"].isin(REFERENCE_STRAINS)].iterrows():
         pn = t["PROBENNUMMER"]
         fasta = ASSEMBLIES / pn / "1_unicycler" / f"{pn}.fasta"
         if not fasta.exists():

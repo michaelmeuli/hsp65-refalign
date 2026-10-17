@@ -19,7 +19,8 @@ import re
 
 import pandas as pd
 
-from hsp65_refalign import ASSEMBLIES, GTDB_REPRESENTATIVES, OUTPUT, SANGER_LINK_DIR, SCREENING_RESULTS, SPECIES
+from hsp65_refalign import (ASSEMBLIES, GTDB_REPRESENTATIVES, OUTPUT, REFERENCE_STRAINS, SANGER_LINK_DIR, SCREENING_RESULTS,
+                            SPECIES)
 from hsp65_refalign.refalign import Reference, align_to_reference, identify_read, load_references
 from hsp65_refalign.sanger_io import classify_locus, load_trimmed_ab1_mixed
 
@@ -67,7 +68,7 @@ def main() -> None:
             continue
         m = re.search(r"(\d{10})", f.name)
         probe = tnr2probe.get(m.group(1), "") if m else ""
-        if not probe or truth.at[probe, "species"] not in SPECIES:
+        if not probe or probe in REFERENCE_STRAINS or truth.at[probe, "species"] not in SPECIES:
             continue
         loaded = load_trimmed_ab1_mixed(f)
         row: dict[str, object] = {"probennummer": probe, "wgs_species": truth.at[probe, "species"],

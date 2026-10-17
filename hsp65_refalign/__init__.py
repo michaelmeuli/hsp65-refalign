@@ -3,6 +3,9 @@ from pathlib import Path
 
 SPECIES = ["kansasii", "persicum", "pseudokansasii", "innocens", "attenuatum", "ostraviense", "gastri"]
 
+# Mkan329-126 to -133 are reference strains, not patient isolates; they are excluded from every analysis
+REFERENCE_STRAINS = frozenset(f"Mkan329-{i:03d}" for i in range(126, 134))
+
 # fixed colour per species (same as mlsa-kansasii) so figures stay comparable
 SPECIES_COLORS = {"kansasii": "#1b9e77", "persicum": "#d95f02", "pseudokansasii": "#7570b3", "innocens": "#e7298a",
                   "attenuatum": "#66a61e", "ostraviense": "#e6ab02", "gastri": "#a6761d"}
