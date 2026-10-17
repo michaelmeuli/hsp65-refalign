@@ -13,6 +13,8 @@ DATA = ROOT / "data"
 SANGER_LINK_DIR = DATA / "sanger" / "seq_kansasii"
 # one GTDB representative genome per species (the references of the plain read alignment)
 GTDB_REPRESENTATIVES = DATA / "gtdb_genomes" / "Mycobacteriaceae" / "kansasii_complex_gtdb_representatives"
+# in-silico hsp65 amplicons (441 bp) of the 72 public complex genomes, <accession>_hsp65.fasta
+HSP65_AMPLICONS = DATA / "gtdb_genomes" / "Mycobacteriaceae" / "kansasii_complex_hsp65_amplicons"
 SCREENING_RESULTS = ROOT / "output" / "screening_map_results.csv"
 ASSEMBLIES = ROOT / "runs" / "mkan329" / "assembly" / "results"
 OUTPUT = ROOT / "output" / "hsp65_refalign"
