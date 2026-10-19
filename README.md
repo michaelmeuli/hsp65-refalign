@@ -18,7 +18,12 @@ main3's output. Only the shared data (`data/`, `runs/`, `output/screening_map_re
 sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log lands in the directory you ran sbatch from
 python 02_blast_reads.py          # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
 python 03_figure.py               # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
+sbatch submit_korean_check.sbatch # 04: Korean-type hsp65 check on the isolates' own assemblies
 ```
+
+Environment: `env_mlsa` (`environment.yml`). `04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
+the three Korean GTDB kansasii genomes over every isolate's assembly and writes `korean_type_check.tsv` and
+`KOREAN_TYPE_SUMMARY.txt` to `output/hsp65_refalign/`.
 
 `01` writes `output/hsp65_refalign/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
 its verdict), `SUMMARY.txt`, `nonmatching_reads.fa`. `02` writes `blast/` there (raw XML, `blast_hits.tsv`,
