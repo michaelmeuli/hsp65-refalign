@@ -1,6 +1,6 @@
 # A single hsp65 Sanger read differentiates the species of the *Mycobacterium kansasii* complex
 
-*Draft, 2026-10-16. Numbers come from `output/hsp65_refalign/` (this repo) and from the reference-level analyses of mlsa-kansasii (`output/mlsa/main1_locus_discovery*`, `main4_hsp65_vs_wgs`). Authors and affiliations to be added. Merged on 2026-10-19 with the earlier mlsa-kansasii draft (`hsp65_sanger_identification.md`, 2026-10-09); its routine-use material is section 5. Numbers in section 5.3 come from that earlier analysis (126 isolates) and have not been recomputed on the current cohort.*
+*Draft, 2026-10-16. Numbers come from `output/hsp65_refalign/` (this repo) and from the reference-level analyses of mlsa-kansasii (`output/mlsa/locus_discovery*`, `sanger_vs_wgs`). Authors and affiliations to be added. Merged on 2026-10-19 with the earlier mlsa-kansasii draft (`hsp65_sanger_identification.md`, 2026-10-09); its routine-use material is section 5. Numbers in section 5.3 come from that earlier analysis (126 isolates) and have not been recomputed on the current cohort.*
 
 ## Abstract
 
@@ -115,16 +115,16 @@ Forward and reverse reads (TB-11 / TB-12w) are paired by sample number and locus
 
 ### 5.3 Earlier analysis on 126 isolates (2026-10-09)
 
-Before the resequenced isolates were added, the same questions were run on 126 genome-typed isolates, 92 with a routine hsp65 read (mlsa-kansasii `main1` to `main4`). Not recomputed; shown because it adds two points the current analysis does not cover.
+Before the resequenced isolates were added, the same questions were run on 126 genome-typed isolates, 92 with a routine hsp65 read (mlsa-kansasii `locus_discovery` to `sanger_vs_wgs`, formerly main1 to main4). Not recomputed; shown because it adds two points the current analysis does not cover.
 
 | Method (92 isolates with a read) | Called | Correct | No call |
 |---|---|---|---|
-| main3, 7 representative genomes, at least 99% identity | 79 | 78 | 13 |
-| main3, hsp65 amplicons of 72 genomes, at least 98% identity | 83 | 82 | 9 |
-| main2 (MLSA-style), nearest species | 82 | 81 | 10 |
+| sanger_refalign, 7 representative genomes, at least 99% identity | 79 | 78 | 13 |
+| sanger_refalign, hsp65 amplicons of 72 genomes, at least 98% identity | 83 | 82 | 9 |
+| sanger_mlsa (MLSA-style), nearest species | 82 | 81 | 10 |
 
 - **The choice of references hardly matters.** The 7 reference strains alone give the same result as all 72 genomes (83 ok, 82 correct). Adding one Korean genome to the 7 makes 2 persicum isolates ambiguous, because its amplicon lies within 1 difference of them; the 72-genome set is kept because it also flags the atypical lineage. The single error in each row was the mixed culture Mkan329-035.
-- **The main2 `unambiguous` flag is conservative by design.** It resolved only 8 of 127 isolates with hsp65 (3 of 42 with 16S added), because the three Korean genomes inflate kansasii's within-species tolerance to 2.5%; without them, 110 of 110 were unambiguous. The nearest species was right in both runs (81 of 82). The flag measures what hsp65 cannot guarantee in the worst reference lineage, not performance on the isolates seen. Plain alignment (main3) agreed with main2 on all 78 shared calls.
+- **The sanger_mlsa `unambiguous` flag is conservative by design.** It resolved only 8 of 127 isolates with hsp65 (3 of 42 with 16S added), because the three Korean genomes inflate kansasii's within-species tolerance to 2.5%; without them, 110 of 110 were unambiguous. The nearest species was right in both runs (81 of 82). The flag measures what hsp65 cannot guarantee in the worst reference lineage, not performance on the isolates seen. Plain alignment (sanger_refalign) agreed with sanger_mlsa on all 78 shared calls.
 - None of the 252 hsp65 reads in the lab archive matched the Korean genomes.
 
 ## 6. Conclusion
@@ -134,7 +134,7 @@ For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one r
 ## Reproduction
 
 - This repo: `sbatch submit_validate.sbatch`, `python 02_blast_reads.py`, `python 03_figure.py`, `sbatch submit_korean_check.sbatch`; outputs in `output/hsp65_refalign/`.
-- mlsa-kansasii: `main1_locus_discovery*`, `main3_reference_alignment/submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/04_make_hsp65_references.py`), `main4_hsp65_vs_wgs/`; outputs in `output/mlsa/`.
+- mlsa-kansasii: `locus_discovery*`, `sanger_refalign/submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/04_make_hsp65_references.py`), `sanger_vs_wgs/`; outputs in `output/mlsa/`.
 - sanger-microsynth: `sanger_ms/call.py`, `main2_analyse_report/run_analyse_report.py`.
 - Run order and provenance: `kansasii-docs/README.md`.
 

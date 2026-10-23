@@ -1,7 +1,7 @@
 # hsp65-refalign
 
 **Question:** does plain reference alignment of the routine Sanger hsp65 reads (`mlsa-kansasii`
-`main3_reference_alignment`) identify the *M. kansasii*-complex species of every isolate that has such a
+`sanger_refalign`) identify the *M. kansasii*-complex species of every isolate that has such a
 read, once contaminated isolates are excluded?
 
 **Truth:** the whole-genome species (GTDB-Tk) in `output/screening_map_results.csv`. **Reads:** every hsp65
@@ -10,7 +10,7 @@ to its isolate (`PROBENNUMMER`) through all TNR columns, so all reads of an isol
 
 The repo is self-contained: `hsp65_refalign/refalign.py` and `sanger_io.py` are vendored copies of the
 mlsa-kansasii modules (same matching logic, no PDF code), and it aligns the reads itself instead of reading
-main3's output. Only the shared data (`data/`, `runs/`, `output/screening_map_results.csv`) is needed.
+sanger_refalign's output. Only the shared data (`data/`, `runs/`, `output/screening_map_results.csv`) is needed.
 
 ## Run
 
@@ -58,5 +58,5 @@ See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 re
   The routine fix for the 24 isolates without a call is to repeat the PCR (and for the Rothia ones,
   use a mycobacteria-specific primer pair or a fresh subculture).
 
-The earlier version of this repo read main3's output, which was older than the linked reads and silently skips
+The earlier version of this repo read sanger_refalign's output, which was older than the linked reads and silently skips
 unusable traces; that gave 125 analysed isolates and 16 no-calls.
