@@ -20,6 +20,7 @@ python 02_blast_reads.py          # login node is fine; SENDS two read sequences
 python 03_figure.py               # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
 sbatch submit_korean_check.sbatch # 04: Korean-type hsp65 check on the isolates' own assemblies
 sbatch submit_public.sbatch       # 05: persicum-like (Korean-type) hsp65 among GTDB-kansasii assemblies of the public BioProjects
+sbatch submit_public.sbatch ctl   # 05 positive control: 3 GTDB-persicum samples per project -> output/hsp65_refalign/public_ctl/ (expect 6 persicum, 3 atypical-kansasii)
 ```
 
 Environment: `env_mlsa` (`environment.yml`). `04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
