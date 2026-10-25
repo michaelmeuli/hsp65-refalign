@@ -14,13 +14,17 @@ Usage: python 02_blast_reads.py            # uses the groups below
 from __future__ import annotations
 
 import argparse
+import sys
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pandas as pd
 from Bio import SeqIO
 from Bio.Blast import NCBIWWW
 
-from hsp65_refalign import OUTPUT
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
+
+from hsp65_refalign import OUTPUT  # noqa: E402
 
 # group name -> isolate whose longest non-matching read represents the group. Groups come from an
 # all-vs-all comparison of the reads: 16 reads of 9 isolates are 94-100% identical (group A),
@@ -55,14 +59,16 @@ def parse_hits(xml_path: str, group: str, query_len: int, n: int) -> list[dict[s
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--hits", type=int, default=10, help="top hits to keep per group (default 10)")
+    ap.add_argument("--in-dir", type=Path, default=OUTPUT, help="directory with nonmatching_reads.fa (from 01)")
+    ap.add_argument("--out", type=Path, default=OUTPUT / "blast")
     args = ap.parse_args()
-    out = OUTPUT / "blast"
+    out: Path = args.out
     out.mkdir(parents=True, exist_ok=True)
 
     all_rows: list[dict[str, object]] = []
     lines = []
     for group, probe in GROUPS.items():
-        name, seq = representative(str(OUTPUT / "nonmatching_reads.fa"), probe)
+        name, seq = representative(str(args.in_dir / "nonmatching_reads.fa"), probe)
         (out / f"{group}.query.fa").write_text(f">{name}\n{seq}\n", encoding="utf-8")
         print(f"{group}: BLASTing {name} ({len(seq)} bp) at NCBI ...", flush=True)
         handle = NCBIWWW.qblast("blastn", "core_nt", seq, megablast=False, hitlist_size=max(args.hits, 20),

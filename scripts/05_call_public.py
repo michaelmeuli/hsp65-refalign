@@ -13,14 +13,18 @@ Usage: 05_call_public.py [--limit N] [--species S] [--out DIR] [BioProject ...] 
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import pandas as pd
 from Bio import SeqIO
 
-from hsp65_refalign import HSP65_AMPLICONS, OUTPUT_PUBLIC, PUBLIC_PROJECTS, RUNS, SPECIES
-from hsp65_refalign.insilico import in_silico_pcr
-from hsp65_refalign.refalign import identify_read, load_references
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
+
+from hsp65_refalign import OUTPUT_PUBLIC  # noqa: E402
+from hsp65_refalign.insilico import in_silico_pcr  # noqa: E402
+from hsp65_refalign.kansasii_paths import HSP65_AMPLICONS, PUBLIC_PROJECTS, SPECIES, public_assemblies  # noqa: E402
+from hsp65_refalign.refalign import identify_read, load_references  # noqa: E402
 
 GTDB_KANSASII = "s__Mycobacterium kansasii"
 
@@ -28,7 +32,7 @@ GTDB_KANSASII = "s__Mycobacterium kansasii"
 def gtdb_species(project: str) -> dict[str, str]:
     """sample -> GTDB-Tk species of every sample of the project that has a call."""
     out: dict[str, str] = {}
-    results = RUNS / f"public_{project}" / "assembly" / "results"
+    results = public_assemblies(project)
     for f in sorted(results.glob("*/3_quality/GTDB/*_gtdb_summary.tsv")):
         t = pd.read_csv(f, sep="\t", dtype=str)
         for _, r in t.iterrows():
@@ -41,18 +45,19 @@ def main() -> None:
     ap.add_argument("projects", nargs="*", default=PUBLIC_PROJECTS)
     ap.add_argument("--limit", type=int, help="only the first N samples per project (test)")
     ap.add_argument("--species", default=GTDB_KANSASII, help="GTDB species to analyse (default kansasii)")
+    ap.add_argument("--hsp65-amplicons", type=Path, default=HSP65_AMPLICONS, help="reference amplicons of the 72 genomes")
     ap.add_argument("--out", type=Path, default=OUTPUT_PUBLIC)
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
-    refs = load_references(HSP65_AMPLICONS, SPECIES)
+    refs = load_references(args.hsp65_amplicons, SPECIES)
     rows: list[dict[str, object]] = []
     for proj in args.projects:
         species = gtdb_species(proj)
         todo = [s for s, sp in species.items() if sp == args.species]
         print(f"{proj}: {len(species)} with GTDB call, {len(todo)} {args.species}", flush=True)
         for sid in todo[:args.limit]:
-            f = RUNS / f"public_{proj}" / "assembly" / "results" / sid / "1_unicycler" / f"{sid}.fasta"
+            f = public_assemblies(proj) / sid / "1_unicycler" / f"{sid}.fasta"
             row: dict[str, object] = {"sample": sid, "bioproject": proj, "gtdb_species": species[sid], "amplicon_bp": 0}
             if f.exists():
                 amp = in_silico_pcr({r.id: str(r.seq) for r in SeqIO.parse(f, "fasta")})

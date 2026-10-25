@@ -8,7 +8,9 @@ Writes figures/hsp65_identity_margin.{png,pdf} to OUTPUT and to article/figures/
 """
 from __future__ import annotations
 
+import argparse
 import shutil
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -18,9 +20,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from hsp65_refalign import OUTPUT, SPECIES, SPECIES_COLORS  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
 
-REPO = Path(__file__).resolve().parent
+from hsp65_refalign import OUTPUT  # noqa: E402
+from hsp65_refalign.kansasii_paths import SPECIES, SPECIES_COLORS  # noqa: E402
+
+REPO = Path(__file__).resolve().parent.parent
 INK, MUTED, GRID = "#222222", "#6b6b6b", "#e4e4e4"
 
 
@@ -29,7 +34,10 @@ def jitter(n: int, seed: int) -> np.ndarray:
 
 
 def main() -> None:
-    r = pd.read_csv(OUTPUT / "reads.tsv", sep="\t")
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--out", type=Path, default=OUTPUT, help="hsp65_refalign output dir (reads.tsv in, figures/ out)")
+    args = ap.parse_args()
+    r = pd.read_csv(args.out / "reads.tsv", sep="\t")
     r = r[~r["contaminated"] & r["closest_identity"].notna()]
     species = [s for s in SPECIES if (r["wgs_species"] == s).any()]
     ok = r[r["status"] == "ok"]
@@ -74,7 +82,7 @@ def main() -> None:
     a.scatter([], [], s=22, color=INK, label=f"ok ({len(ok)} reads)")
     a.legend(frameon=False, fontsize=8, loc="center left", bbox_to_anchor=(0.0, 0.55))
 
-    out = OUTPUT / "figures"
+    out = args.out / "figures"
     out.mkdir(exist_ok=True)
     for ext in ("png", "pdf"):
         fig.savefig(out / f"hsp65_identity_margin.{ext}", dpi=300)

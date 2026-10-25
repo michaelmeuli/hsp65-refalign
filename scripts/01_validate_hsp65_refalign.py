@@ -15,24 +15,29 @@ About 3 s per read plus 10 s per non-ok read: run as a job (submit_validate.sbat
 """
 from __future__ import annotations
 
+import argparse
 import re
+import sys
+from pathlib import Path
 
 import pandas as pd
 
-from hsp65_refalign import (ASSEMBLIES, GTDB_REPRESENTATIVES, OUTPUT, REFERENCE_STRAINS, SANGER_LINK_DIR, SCREENING_RESULTS,
-                            SPECIES)
-from hsp65_refalign.refalign import Reference, align_to_reference, identify_read, load_references
-from hsp65_refalign.sanger_io import classify_locus, load_trimmed_ab1_mixed
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
 
-TNR_COLUMNS = ["TNR", "TNR_JC", "TNR_MM", "TNR3", "TNR4", "TNR5", "TNR6", "TNR_MLSA"]
+from hsp65_refalign import OUTPUT  # noqa: E402
+from hsp65_refalign.kansasii_paths import (ASSEMBLIES, GTDB_REPRESENTATIVES, REFERENCE_STRAINS, SANGER_LINK_DIR,  # noqa: E402
+                                           SCREENING_MAP_RESULTS, SPECIES, TNR_COLUMNS_RESULTS)
+from hsp65_refalign.refalign import Reference, align_to_reference, identify_read, load_references
+from hsp65_refalign.sanger_io import classify_locus, load_trimmed_ab1_mixed  # noqa: E402
+
 # a good read of the isolate's own genome aligns at >= 98%; below this it is not from that genome
 OWN_GENOME_MIN_IDENTITY = 90.0
 NO_MATCH = "no call: read does not match own genome"
 
 
-def own_assembly_identity(probe: str, seq: str) -> float | None:
+def own_assembly_identity(assemblies: Path, probe: str, seq: str) -> float | None:
     """Identity (%) of the read to the isolate's own assembly, None if no alignment or no assembly."""
-    fasta = ASSEMBLIES / probe / "1_unicycler" / f"{probe}.fasta"
+    fasta = assemblies / probe / "1_unicycler" / f"{probe}.fasta"
     if not fasta.exists():
         return None
     hit = align_to_reference(Reference("own", "own", "", fasta), seq)
@@ -54,16 +59,24 @@ def verdict(d: pd.DataFrame, species: str) -> str:
 
 
 def main() -> None:
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    s = pd.read_csv(SCREENING_RESULTS, dtype=str).fillna("")
-    tnr2probe = {r[c]: r["PROBENNUMMER"] for _, r in s.iterrows() for c in TNR_COLUMNS if r.get(c)}
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--gtdb-representatives", type=Path, default=GTDB_REPRESENTATIVES, help="one genome per species (references)")
+    ap.add_argument("--sanger-dir", type=Path, default=SANGER_LINK_DIR, help="directory of linked .ab1 reads")
+    ap.add_argument("--screening-map-results", type=Path, default=SCREENING_MAP_RESULTS)
+    ap.add_argument("--assemblies", type=Path, default=ASSEMBLIES, help="<isolate>/1_unicycler/<isolate>.fasta")
+    ap.add_argument("--out", type=Path, default=OUTPUT)
+    args = ap.parse_args()
+    out: Path = args.out
+    out.mkdir(parents=True, exist_ok=True)
+    s = pd.read_csv(args.screening_map_results, dtype=str).fillna("")
+    tnr2probe = {r[c]: r["PROBENNUMMER"] for _, r in s.iterrows() for c in TNR_COLUMNS_RESULTS if r.get(c)}
     truth = s.set_index("PROBENNUMMER")
-    refs = load_references(GTDB_REPRESENTATIVES, SPECIES)
+    refs = load_references(args.gtdb_representatives, SPECIES)
     print(f"{len(refs)} references", flush=True)
 
     rows: list[dict[str, object]] = []
     seqs: dict[str, str] = {}
-    for f in sorted(SANGER_LINK_DIR.glob("*.ab1")):
+    for f in sorted(args.sanger_dir.glob("*.ab1")):
         if classify_locus(f.name) != "hsp65":
             continue
         m = re.search(r"(\d{10})", f.name)
@@ -86,12 +99,12 @@ def main() -> None:
             if res.runner_up is not None:
                 row["margin"] = res.diffs[res.runner_up] - res.diffs[res.best]
         if res.status != "ok":
-            row["own_assembly_identity"] = own_assembly_identity(probe, seq)
+            row["own_assembly_identity"] = own_assembly_identity(args.assemblies, probe, seq)
             seqs[f.stem] = seq
         print(f"{f.stem}: {row['status']} {row.get('closest_species')} {row.get('closest_identity')}", flush=True)
         rows.append(row)
     ra = pd.DataFrame(rows)
-    ra.sort_values(["probennummer", "read"]).to_csv(OUTPUT / "reads.tsv", sep="\t", index=False)
+    ra.sort_values(["probennummer", "read"]).to_csv(out / "reads.tsv", sep="\t", index=False)
 
     iso_rows = []
     for probe, d in ra.groupby("probennummer"):
@@ -102,10 +115,10 @@ def main() -> None:
                          "best_identity": d["closest_identity"].max(),
                          "best_own_assembly_identity": d["own_assembly_identity"].max(), "verdict": verdict(d, species)})
     iso = pd.DataFrame(iso_rows)
-    iso.to_csv(OUTPUT / "isolates.tsv", sep="\t", index=False)
+    iso.to_csv(out / "isolates.tsv", sep="\t", index=False)
 
     nm = set(iso[iso["verdict"] == NO_MATCH]["probennummer"])
-    with open(OUTPUT / "nonmatching_reads.fa", "w", encoding="utf-8") as fh:
+    with open(out / "nonmatching_reads.fa", "w", encoding="utf-8") as fh:
         for _, r in ra[ra["probennummer"].isin(nm) & (ra["status"] != "ok")].iterrows():
             if r["read"] in seqs:
                 fh.write(f">{r['probennummer']}|{r['read']}\n{seqs[r['read']]}\n")
@@ -124,7 +137,7 @@ def main() -> None:
         lines += ["", "isolates without a call:"]
         lines += [f"  {r.probennummer} ({r.wgs_species}): {r.n_hsp65_reads} reads, best identity to references {r.best_identity}%, "
                   f"to own assembly {r.best_own_assembly_identity}% -> {r.verdict}" for r in nc.itertuples()]
-    (OUTPUT / "SUMMARY.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (out / "SUMMARY.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
 
