@@ -4,36 +4,50 @@
 `sanger_refalign`) identify the *M. kansasii*-complex species of every isolate that has such a
 read, once contaminated isolates are excluded?
 
-**Truth:** the whole-genome species (GTDB-Tk) in `output/screening_map_results.csv`. **Reads:** every hsp65
+**Truth:** the whole-genome species (GTDB-Tk) in `data/imm/screening_map_results.csv` (`SCREENING_MAP_RESULTS`). **Reads:** every hsp65
 `.ab1` in `data/sanger/seq_kansasii` (made by `mlsa-kansasii/scripts/03_link_sanger_kansasii.sh`), assigned
 to its isolate (`PROBENNUMMER`) through all TNR columns, so all reads of an isolate count.
 
 The repo is self-contained: `hsp65_refalign/refalign.py` and `sanger_io.py` are vendored copies of the
 mlsa-kansasii modules (same matching logic, no PDF code), and it aligns the reads itself instead of reading
-sanger_refalign's output. Only the shared data (`data/`, `runs/`, `output/screening_map_results.csv`) is needed.
+sanger_refalign's output. Only the shared data (`data/`, `runs/`) is needed.
+
+## Layout
+
+```
+hsp65_refalign/   package: refalign.py, sanger_io.py, insilico.py (vendored), kansasii_paths.py (shared constants, vendored)
+scripts/          01_validate_hsp65_refalign.py ... 05_call_public.py
+submit_*.sbatch   validate (01), korean_check (04), public (05, plus `ctl` and `persicum` modes)
+article/          draft article
+```
+
+Every path is a constant of `kansasii_paths.py` (same name in all repos) and a flag of the script that uses it, e.g.
+`01_validate_hsp65_refalign.py --gtdb-representatives DIR --sanger-dir DIR --screening-map-results FILE --assemblies DIR --out DIR`;
+`05_call_public.py --hsp65-amplicons DIR --out DIR`. See `kansasii-docs/README.md` (conventions).
 
 ## Run
 
 ```bash
 sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log goes to output/hsp65_refalign/logs/
-python 02_blast_reads.py          # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
-python 03_figure.py               # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
+python scripts/02_blast_reads.py  # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
+python scripts/03_figure.py       # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
 sbatch submit_korean_check.sbatch # 04: Korean-type hsp65 check on the isolates' own assemblies
 sbatch submit_public.sbatch       # 05: persicum-like (Korean-type) hsp65 among GTDB-kansasii assemblies of the public BioProjects
 sbatch submit_public.sbatch ctl   # 05 positive control: 3 GTDB-persicum samples per project -> output/hsp65_refalign/public_ctl/ (expect 6 persicum, 3 atypical-kansasii)
+sbatch submit_public.sbatch persicum  # 05 on all 80 GTDB-persicum samples -> output/hsp65_refalign/public_persicum/ (hsp65 of samples whose gyrA is kansasii-like)
 ```
 
-Environment: `env_mlsa` (`environment.yml`). `04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
+Environment: `env_mlsa` (`environment.yml`). `scripts/04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
 the three Korean GTDB kansasii genomes over every isolate's assembly and writes `korean_type_check.tsv` and
 `KOREAN_TYPE_SUMMARY.txt` to `output/hsp65_refalign/`.
 
-`05_call_public.py` cuts the 441 bp hsp65 amplicon in silico (TB-11/TB-12w; `hsp65_refalign/insilico.py`) out of each
+`scripts/05_call_public.py` cuts the 441 bp hsp65 amplicon in silico (TB-11/TB-12w; `hsp65_refalign/insilico.py`) out of each
 `runs/public_<BioProject>/` assembly whose GTDB-Tk species is kansasii and classifies it against the 72 per-genome amplicons;
 it writes `insilico_public.tsv` and `SUMMARY.txt` to `output/hsp65_refalign/public/`.
 
 `01` writes `output/hsp65_refalign/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
 its verdict), `SUMMARY.txt`, `nonmatching_reads.fa`. `02` writes `blast/` there (raw XML, `blast_hits.tsv`,
-`BLAST_SUMMARY.txt`). Paths are in `hsp65_refalign/__init__.py` (root overridable with `KANSASII_ROOT`).
+`BLAST_SUMMARY.txt`). Paths are in `hsp65_refalign/kansasii_paths.py` (shared; root overridable with `KANSASII_ROOT`) and `hsp65_refalign/__init__.py` (`OUTPUT`, `OUTPUT_PUBLIC`).
 
 ## Verdicts per isolate
 

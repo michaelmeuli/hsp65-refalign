@@ -7,6 +7,7 @@ See README.md. Easy to get wrong:
 - `hsp65_refalign/insilico.py` (in-silico PCR, primers) is likewise a vendored copy of mlsa-kansasii `mlsa/loci.py` / `protocols.py`.
 - **Environment:** `env_mlsa`. Run through `sbatch submit_validate.sbatch`, not the login node.
 - **Type check:** `~/data/conda/envs/env_typecheck/bin/mypy` (strict).
-- **Outputs** go to `/shares/sander.imm.uzh/MM/kansasii/output/hsp65_refalign/`, not the repo.
-- Contamination = non-empty `contamination_flag` in `screening_map_results.csv`; truth species outside `hsp65_refalign.SPECIES` are dropped. Mkan329-126 to -133 are reference strains, not patient isolates: excluded via `REFERENCE_STRAINS`.
+- **Outputs** go to `output/hsp65_refalign/` on the shares (`hsp65_refalign.OUTPUT`), not the repo. The Korean check shares that directory with `01`: its manifest is `MANIFEST_korean_type_check.txt`.
+- **Paths:** `hsp65_refalign/kansasii_paths.py` is a vendored copy of `kansasii-docs/templates/kansasii_paths.py`; never edit it here (`bash repos/check_sync.sh --fix` restores it). Scripts take every input path as a flag defaulting to the constant.
+- Contamination = non-empty `contamination_flag` in `screening_map_results.csv`; truth species outside `kansasii_paths.SPECIES` are dropped. Mkan329-126 to -133 are reference strains, not patient isolates: excluded via `REFERENCE_STRAINS`.
 - `02_blast_reads.py` sends sequences to NCBI; only run it when that is intended. Its two groups (`GROUPS`) were chosen by an all-vs-all comparison of the non-matching reads.

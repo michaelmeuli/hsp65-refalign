@@ -30,7 +30,7 @@ We argue that this conclusion is true for a fixed identity threshold and for the
 
 **Ceiling.** To separate failures of the assay from limits of the marker, the hsp65 amplicon was also extracted in silico from each isolate's own assembly and classified with the same rules.
 
-The code is `01_validate_hsp65_refalign.py`, `02_blast_reads.py`, `04_korean_type_check.py` and `05_call_public.py`; the alignment module is vendored from mlsa-kansasii.
+The code is `scripts/01_validate_hsp65_refalign.py`, `02_blast_reads.py`, `04_korean_type_check.py` and `05_call_public.py`; the alignment module is vendored from mlsa-kansasii.
 
 ## 3. Results
 
@@ -152,8 +152,8 @@ For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one r
 
 ## Reproduction
 
-- This repo: `sbatch submit_validate.sbatch`, `python 02_blast_reads.py`, `python 03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65_refalign/`.
-- mlsa-kansasii: `locus_discovery*`, `sanger_refalign/submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/04_make_hsp65_references.py`), `sanger_vs_wgs/`; outputs in `output/mlsa/`.
+- This repo: `sbatch submit_validate.sbatch`, `python scripts/02_blast_reads.py`, `python scripts/03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65_refalign/`.
+- mlsa-kansasii: `scripts/04_locus_discovery.py` (+ `--exclude-atypical`), `submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/06_make_hsp65_references.py`), `scripts/10_sanger_vs_wgs.py`; outputs in `output/mlsa/`.
 - sanger-microsynth: `sanger_ms/call.py`, `main2_analyse_report/run_analyse_report.py`.
 - Run order and provenance: `kansasii-docs/README.md`.
 
