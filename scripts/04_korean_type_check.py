@@ -68,7 +68,10 @@ def main() -> None:
         print(pn, row["diffs_korean"], row["diffs_kansasii_ref"], row["diffs_persicum_ref"], flush=True)
         rows.append(row)
     df = pd.DataFrame(rows)
-    df["korean_type"] = df["diffs_korean"] < df["diffs_kansasii_ref"]
+    # raw comparison, true for most non-kansasii species too (their hsp65 is closer to the persicum-like Korean one than to kansasii);
+    # korean_type applies the definition above: only isolates whose genome is kansasii
+    df["closer_to_korean"] = df["diffs_korean"] < df["diffs_kansasii_ref"]
+    df["korean_type"] = df["closer_to_korean"] & (df["wgs_species"] == "kansasii")
     df.to_csv(out / "korean_type_check.tsv", sep="\t", index=False)
 
     k = df[(df["wgs_species"] == "kansasii") & ~df["contaminated"]]
@@ -77,8 +80,8 @@ def main() -> None:
              f"uncontaminated kansasii isolates: {len(k)}",
              f"  minimum differences to the Korean amplicon: {k['diffs_korean'].min():.0f}",
              f"  maximum differences to the kansasii reference: {k['diffs_kansasii_ref'].max():.0f}",
-             f"  closer to the Korean amplicon than to the kansasii reference: {int(k['korean_type'].sum())}",
-             f"all isolates closer to the Korean amplicon than to the kansasii reference: {int(df['korean_type'].sum())}"]
+             f"  Korean-type (closer to the Korean amplicon than to the kansasii reference): {int(k['korean_type'].sum())}",
+             f"all isolates (any genome species) closer to the Korean than to the kansasii amplicon: {int(df['closer_to_korean'].sum())} (not an atypical finding for non-kansasii species)"]
     for sp, d in df[~df["contaminated"]].groupby("wgs_species"):
         lines.append(f"  {sp}: n={len(d)}, min diffs to Korean {d['diffs_korean'].min():.0f}, "
                      f"to persicum reference {d['diffs_persicum_ref'].min():.0f}")
