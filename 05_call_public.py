@@ -64,7 +64,7 @@ def main() -> None:
                     if b is not None:
                         row.update(closest_accession=res.hits[b].ref.accession, diffs=res.diffs[b],
                                    identity=round(100 * res.identity(b), 2))
-                    if s is not None:
+                    if b is not None and s is not None:
                         row.update(second_species=res.hits[s].ref.species, margin=res.diffs[s] - res.diffs[b])
             rows.append(row)
             print(row, flush=True)
