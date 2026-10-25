@@ -13,3 +13,8 @@ conda activate env_mlsa
 
 cd "$REPO_ROOT"
 python 04_korean_type_check.py
+
+# provenance (see kansasii-docs/docs/PROVENANCE.md)
+bash /shares/sander.imm.uzh/MM/kansasii/repos/kansasii-docs/bin/write_manifest.sh \
+  "/shares/sander.imm.uzh/MM/kansasii/output/hsp65_refalign/korean_check" \
+  /shares/sander.imm.uzh/MM/kansasii/repos/hsp65-refalign submit_korean_check.sbatch

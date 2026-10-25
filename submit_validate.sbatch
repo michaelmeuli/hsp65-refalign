@@ -13,3 +13,8 @@ conda activate env_mlsa
 
 cd "$REPO_ROOT"
 python 01_validate_hsp65_refalign.py
+
+# provenance (see kansasii-docs/docs/PROVENANCE.md)
+bash /shares/sander.imm.uzh/MM/kansasii/repos/kansasii-docs/bin/write_manifest.sh \
+  "/shares/sander.imm.uzh/MM/kansasii/output/hsp65_refalign" \
+  /shares/sander.imm.uzh/MM/kansasii/repos/hsp65-refalign submit_validate.sbatch
