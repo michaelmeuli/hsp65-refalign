@@ -57,12 +57,14 @@ disagrees. Isolates with no `ok` read are **no call**. To say why, each non-`ok`
 isolate's own assembly: below 90% identity, the read does not come from that genome. Traces that are empty or
 < 100 bp after trimming count as unusable.
 
-## Result (2026-10-16)
+## Result (rerun 2026-10-25; first run 2026-10-16)
 
-See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 3 are contaminated
-(Mkan329-035, -106, -113) and excluded, leaving 133:
+See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 4 are contaminated
+(Mkan329-021, -035, -106, -113) and excluded, leaving 132. (The first run excluded only 035, 106 and 113: its
+output predated the change of the CheckM threshold from 10 % to 5 % on 2026-10-21, which made 021 contaminated; 021 had a
+correct call, so the numbers went from 109/133 to 108/132.)
 
-- **109 get a call and all 109 are correct** (0 wrong).
+- **108 get a call and all 108 are correct** (0 wrong).
 - **24 get no call, so "every isolate with an hsp65 read is identified" does not hold:**
   - **13: the read does not match the isolate's own genome** (~80% to every reference and ~75-80% to the
     isolate's assembly) although the trace is clean. These reads fall into two sequence groups
