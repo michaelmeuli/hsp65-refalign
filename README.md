@@ -80,3 +80,10 @@ See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 re
 
 The earlier version of this repo read sanger_refalign's output, which was older than the linked reads and silently skips
 unusable traces; that gave 125 analysed isolates and 16 no-calls.
+
+## Atypical hsp65
+
+The samples whose hsp65 is persicum-like (Korean type) or belongs to another species than their genome, in the project (`korean_type_check.tsv`, `isolates.tsv`)
+and in the public BioProjects (`public/insilico_public.tsv`, `public_persicum/`), are collected together with the gyrA findings in
+`output/atypical_samples/atypical_samples.tsv` and explained in `kansasii-docs/docs/ATYPICAL.md`. In short: the Korean-type hsp65 is absent from the project
+isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 880 public GTDB-kansasii assemblies.
