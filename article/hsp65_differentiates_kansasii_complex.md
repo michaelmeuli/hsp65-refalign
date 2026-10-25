@@ -8,7 +8,7 @@
 
 **Methods.** We tested hsp65 against whole-genome species (GTDB-Tk) in two ways. At reference level, we measured how many of the 21 species pairs hsp65 separates in 72 public genomes. In the clinical setting, we aligned every routine hsp65 Sanger read of 136 genome-typed isolates to one reference genome per species and called the species with the fewest differences, requiring at least 98% identity and at least two differences fewer than the next species. Three contaminated isolates were excluded.
 
-**Results.** hsp65 separated 21 of 21 species pairs once three near-clonal genomes carrying an atypical hsp65 were set aside (within-species divergence up to 0.45%, between-species at least 1.36%). A perfect read (hsp65 extracted from each assembly) gave the genome species for 174 of 174 uncontaminated isolates. Of 133 analysed isolates, 109 received a call and **all 109 were correct** (197 of 197 individual reads; the 72 isolates with two or more callable reads never disagreed). The remaining 24 isolates got no call, and in none of them did a callable read point to the wrong species: 13 carried clean reads of *Rothia mucilaginosa*, 10 only unusable traces, and 1 only poor reads.
+**Results.** hsp65 separated 21 of 21 species pairs once three near-clonal genomes carrying an atypical hsp65 were set aside (within-species divergence up to 0.45%, between-species at least 1.36%). A perfect read (hsp65 extracted from each assembly) gave the genome species for 174 of 174 uncontaminated isolates. Of 133 analysed isolates, 109 received a call and **all 109 were correct** (197 of 197 individual reads; the 72 isolates with two or more callable reads never disagreed). In 880 public GTDB-*kansasii* assemblies, 1 carried the persicum-like hsp65 and 2 an hsp65 identical to another species. The remaining 24 isolates got no call, and in none of them did a callable read point to the wrong species: 13 carried clean reads of *Rothia mucilaginosa*, 10 only unusable traces, and 1 only poor reads.
 
 **Conclusion.** One good hsp65 read, interpreted by best match and margin rather than by a fixed identity cutoff, identifies the species of the *M. kansasii* complex. Failures are failures of the read, not of the marker, and are detectable by the same rules that make the correct calls.
 
@@ -26,9 +26,11 @@ We argue that this conclusion is true for a fixed identity threshold and for the
 
 **Clinical reads.** All hsp65 `.ab1` traces in the lab archive (2014 to 2026; primers TB-11 and TB-12w) were quality-trimmed (modified Mott), assigned to their isolate through every TNR recorded for it, and aligned to one reference genome per species. Seeds of exact 15-mers locate the best window and a global alignment counts differences over the read. The call is the species with the fewest differences. A read is **ok** if its identity is at least 98% and the next-closest species has at least two more differences. An isolate is correct if it has at least one ok read and every ok read names the genome species. Reads without an ok call were also aligned to the isolate's own assembly; below 90% identity the read does not come from that genome. Two non-matching reads, one per sequence group, were identified by BLAST against NCBI core_nt.
 
+**Public genomes.** To see whether the atypical lineage occurs outside the Korean study, the hsp65 amplicon (TB-11 / TB-12w, TB-12 as fallback, up to three mismatches per primer) was cut in silico from the Unicycler assemblies of the public BioProjects PRJNA1078897, PRJNA1048499, PRJNA845115 and PRJNA323639, for the 880 samples that GTDB-Tk calls *M. kansasii*, and classified against the 72 per-genome amplicons with the same rules. The three Korean genomes are separate references, so a closest hit to one of them marks the atypical lineage. As a positive control the first three GTDB-*persicum* samples of each of three projects were run the same way.
+
 **Ceiling.** To separate failures of the assay from limits of the marker, the hsp65 amplicon was also extracted in silico from each isolate's own assembly and classified with the same rules.
 
-The code is `01_validate_hsp65_refalign.py` and `02_blast_reads.py`; the alignment module is vendored from mlsa-kansasii.
+The code is `01_validate_hsp65_refalign.py`, `02_blast_reads.py`, `04_korean_type_check.py` and `05_call_public.py`; the alignment module is vendored from mlsa-kansasii.
 
 ## 3. Results
 
@@ -72,11 +74,23 @@ Thirteen isolates have clean traces that match no kansasii-complex reference (ab
 
 Ten isolates have only empty or sub-100 bp traces, and one (persicum) only reads at 93 to 94%. All 24 are cases for repeating the PCR.
 
+### 3.5 Public genomes: the atypical lineage is rare but not confined to the Korean study
+
+An amplicon was found in all 880 GTDB-kansasii samples. 877 are closest to a typical kansasii reference, each with 0 differences. Three are not:
+
+| Sample | BioProject | Closest hsp65 reference (differences) | Best typical kansasii reference (differences) | Note |
+|---|---|---|---|---|
+| SRR28038296 | PRJNA1078897 | atypical kansasii genome GCF_002705785.1 (0) | same genome | persicum is 1 difference behind: ambiguous, a read would be called persicum |
+| SRR27048434 | PRJNA1048499 | *pseudokansasii* GCA_000524055.1 (0) | 11 | next: gastri 10, persicum 12 |
+| SRR27048675 | PRJNA1048499 | *attenuatum* GCA_002086865.1 (0) | 15 | next: gastri 14, persicum 16, pseudokansasii 16 |
+
+So 1 of 880 (0.1%) has the persicum-like hsp65 of the Korean genomes, and no sample is closest to a persicum reference. The other two are kansasii by every other measure (GTDB-Tk ANI to the type strain 99.59% and 99.88%, next species below 94%; 16S kansasii; CheckM contamination 0.15%) but carry an hsp65 identical to that of *pseudokansasii* and *attenuatum*; a Sanger hsp65 read would call them those species. We did not establish whether these are real hsp65 transfers or assembly artefacts, and did not map reads to the amplicons to look for mixed bases. The positive control behaved as expected: of nine GTDB-*persicum* samples, six were closest to a persicum reference (status ok) and three to the atypical kansasii genome (ambiguous, persicum one difference behind), so all nine were flagged persicum-like. Not covered are the 184 public samples without a kansasii GTDB call, one sample without an assembly and the in-house isolates (section 3.2).
+
 ## 4. Discussion
 
 **Why hsp65 works here although "no marker distinguishes all species".** The statement of Jagielski et al. [2019] compares markers across species at the level of fixed thresholds and public genomes. We find two things that matter in practice. First, the marker fails through one identifiable lineage, not diffusely. Second, the call needs the best match and its margin, not an identity cut-off: kansasii and gastri are about 98.4% identical in hsp65, so a rule such as at least 97% [McNabb 2004] accepts both, whereas the closest species with a margin of at least two differences does not.
 
-**The atypical lineage is real but absent from our isolates.** The three Korean genomes are *M. kansasii* by ANI (98.5 to 99.3% to other kansasii, at most 94% to any other species) and identical to the type strain at gyrA, rpoB, 16S and other loci, yet carry a persicum-like hsp65 (11 SNPs in the amplicon; the "atypical hsp65 types" of Jagielski et al.). The alignment of the GTDB genomes (Figure 2, species in the order kansasii, persicum, pseudokansasii, innocens, attenuatum, ostraviense, gastri) shows that the Korean samples are the exception: every other genome groups with its species, whereas these three kansasii genomes differ from the other kansasii and follow the persicum pattern. The Korean amplicon is 1 to 3 differences from the persicum genomes, overlapping the 0 to 2 differences seen among persicum genomes themselves, so an hsp65 read of such a strain would be called persicum and the margin rule cannot separate the two; gyrA does. None of our isolates behaved like this. Among the 122 uncontaminated isolates that are *M. kansasii* by genome, the in-silico amplicon had kansasii as the closest species in all 122, identical to the kansasii reference in 121 and one base away in the other, so none is persicum-like. Laying the Korean amplicon directly over each assembly (`04_korean_type_check.py`) confirms it: the closest kansasii isolate is 10 differences away, and none of the 122 is closer to the Korean amplicon than to the kansasii reference. This covers the whole cohort, not only the 109 isolates with a callable Sanger read. We therefore claim that hsp65 differentiates the complex, and not that it is infallible.
+**The atypical lineage is real but absent from our isolates and rare in public data.** The three Korean genomes are *M. kansasii* by ANI (98.5 to 99.3% to other kansasii, at most 94% to any other species) and identical to the type strain at gyrA, rpoB, 16S and other loci, yet carry a persicum-like hsp65 (11 SNPs in the amplicon; the "atypical hsp65 types" of Jagielski et al.). The alignment of the GTDB genomes (Figure 2, species in the order kansasii, persicum, pseudokansasii, innocens, attenuatum, ostraviense, gastri) shows that the Korean samples are the exception: every other genome groups with its species, whereas these three kansasii genomes differ from the other kansasii and follow the persicum pattern. The Korean amplicon is 1 to 3 differences from the persicum genomes, overlapping the 0 to 2 differences seen among persicum genomes themselves, so an hsp65 read of such a strain would be called persicum and the margin rule cannot separate the two; gyrA does. None of our isolates behaved like this. Among the 122 uncontaminated isolates that are *M. kansasii* by genome, the in-silico amplicon had kansasii as the closest species in all 122, identical to the kansasii reference in 121 and one base away in the other, so none is persicum-like. Laying the Korean amplicon directly over each assembly (`04_korean_type_check.py`) confirms it: the closest kansasii isolate is 10 differences away, and none of the 122 is closer to the Korean amplicon than to the kansasii reference. This covers the whole cohort, not only the 109 isolates with a callable Sanger read. Public data show the lineage outside the Korean study, but rarely: 1 of 880 GTDB-kansasii public assemblies (section 3.5), and two further samples whose hsp65 matches another species. We therefore claim that hsp65 differentiates the complex, and not that it is infallible.
 
 ![hsp65 alignment of the GTDB genomes of the complex](figures/hsp65_alignment_divider.png)
 
@@ -91,8 +105,8 @@ Ten isolates have only empty or sub-100 bp traces, and one (persicum) only reads
 - The truth is the genome species. Isolates in which the genome and the Sanger sample could differ were handled only through the contamination flag and the own-genome check.
 - Eighteen percent of isolates (24 of 133) had no usable call. A diagnostic claim has to include that the assay must be repeated for roughly one isolate in six.
 - The rules were fixed on the same archive they are tested on, and the thresholds (98% identity, margin of two) were chosen on this data. A prospective batch is needed.
-- The absence of the persicum-like kansasii hsp65 holds for this one-laboratory cohort; the three Korean genomes come from a single study, and the lineage may be present elsewhere.
-- A first look elsewhere (`05_call_public.py`, in-silico amplicons of 880 GTDB-kansasii assemblies from four public BioProjects): 877 are closest to a typical kansasii reference, 1 (SRR28038296, PRJNA1078897) has the persicum-like hsp65 and is ambiguous against persicum, and 2 are closest to pseudokansasii and attenuatum. The lineage is therefore rare but not confined to the Korean genomes. This is not yet integrated into the Results; reads were not checked for mixed bases.
+- The absence of the persicum-like kansasii hsp65 holds for this one-laboratory cohort; the lineage occurs elsewhere (1 of 880 public GTDB-kansasii assemblies), so other laboratories may meet it.
+- The public-genome result (section 3.5) uses in-silico amplicons from assemblies, not Sanger reads, and the 3 discordant samples were not checked at read level. Its GTDB labels are taken at face value.
 - Only two *Rothia* reads were BLASTed; the others were assigned by their identity to those.
 
 ## 5. Use in the routine laboratory
@@ -138,7 +152,7 @@ For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one r
 
 ## Reproduction
 
-- This repo: `sbatch submit_validate.sbatch`, `python 02_blast_reads.py`, `python 03_figure.py`, `sbatch submit_korean_check.sbatch`; outputs in `output/hsp65_refalign/`.
+- This repo: `sbatch submit_validate.sbatch`, `python 02_blast_reads.py`, `python 03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65_refalign/`.
 - mlsa-kansasii: `locus_discovery*`, `sanger_refalign/submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/04_make_hsp65_references.py`), `sanger_vs_wgs/`; outputs in `output/mlsa/`.
 - sanger-microsynth: `sanger_ms/call.py`, `main2_analyse_report/run_analyse_report.py`.
 - Run order and provenance: `kansasii-docs/README.md`.
