@@ -148,7 +148,7 @@ Before the resequenced isolates were added, the same questions were run on 126 g
 
 ## 6. Conclusion
 
-For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one reference genome per species and called by best match with a margin, gave the genome species for all 109 isolates that produced a callable read and for all 174 perfect in-silico amplicons. The marker fails only through a defined atypical lineage, which did not occur among the 122 kansasii isolates of this cohort. The failures in practice were absent or contaminated reads, which the rules reject. Hsp65 sequencing is sufficient for routine species identification in this complex, with gyrA as the confirmation locus where the result must be certain.
+For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one reference genome per species and called by best match with a margin, gave the genome species for all 109 isolates that produced a callable read and for all 174 perfect in-silico amplicons. The marker fails only through a defined atypical lineage, which did not occur among the 122 kansasii isolates of this cohort and was found in 1 of 880 public GTDB-kansasii assemblies (0.1%); in two further public assemblies the hsp65 matches another species. The failures in practice were absent or contaminated reads, which the rules reject. Hsp65 sequencing is sufficient for routine species identification in this complex, with gyrA as the confirmation locus where the result must be certain.
 
 ## Reproduction
 
