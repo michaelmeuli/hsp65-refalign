@@ -21,3 +21,7 @@ HSP65_AMPLICONS = DATA / "gtdb_genomes" / "Mycobacteriaceae" / "kansasii_complex
 SCREENING_RESULTS = ROOT / "output" / "screening_map_results.csv"
 ASSEMBLIES = ROOT / "runs" / "mkan329" / "assembly" / "results"
 OUTPUT = ROOT / "output" / "hsp65_refalign"
+# public BioProjects (immensekansasii): runs/public_<BioProject>/assembly/results/<sample>/...
+RUNS = ROOT / "runs"
+PUBLIC_PROJECTS = ["PRJNA1078897", "PRJNA1048499", "PRJNA845115", "PRJNA323639"]
+OUTPUT_PUBLIC = OUTPUT / "public"

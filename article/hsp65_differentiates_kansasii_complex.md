@@ -92,6 +92,7 @@ Ten isolates have only empty or sub-100 bp traces, and one (persicum) only reads
 - Eighteen percent of isolates (24 of 133) had no usable call. A diagnostic claim has to include that the assay must be repeated for roughly one isolate in six.
 - The rules were fixed on the same archive they are tested on, and the thresholds (98% identity, margin of two) were chosen on this data. A prospective batch is needed.
 - The absence of the persicum-like kansasii hsp65 holds for this one-laboratory cohort; the three Korean genomes come from a single study, and the lineage may be present elsewhere.
+- A first look elsewhere (`05_call_public.py`, in-silico amplicons of 880 GTDB-kansasii assemblies from four public BioProjects): 877 are closest to a typical kansasii reference, 1 (SRR28038296, PRJNA1078897) has the persicum-like hsp65 and is ambiguous against persicum, and 2 are closest to pseudokansasii and attenuatum. The lineage is therefore rare but not confined to the Korean genomes. This is not yet integrated into the Results; reads were not checked for mixed bases.
 - Only two *Rothia* reads were BLASTed; the others were assigned by their identity to those.
 
 ## 5. Use in the routine laboratory
