@@ -1,6 +1,6 @@
 # A single hsp65 Sanger read differentiates the species of the *Mycobacterium kansasii* complex
 
-*Draft, 2026-10-16. Numbers come from `output/hsp65_refalign/` (this repo) and from the reference-level analyses of mlsa-kansasii (`output/mlsa/locus_discovery*`, `sanger_vs_wgs`). Authors and affiliations to be added. Merged on 2026-10-19 with the earlier mlsa-kansasii draft (`hsp65_sanger_identification.md`, 2026-10-09); its routine-use material is section 5. Numbers in section 5.3 come from that earlier analysis (126 isolates) and have not been recomputed on the current cohort.*
+*Draft, 2026-10-16. Numbers come from `output/hsp65-refalign/results/` (this repo) and from the reference-level analyses of mlsa-kansasii (`output/mlsa-kansasii/results/locus_discovery*`, `sanger_vs_wgs`). Authors and affiliations to be added. Merged on 2026-10-19 with the earlier mlsa-kansasii draft (`hsp65_sanger_identification.md`, 2026-10-09); its routine-use material is section 5. Numbers in section 5.3 come from that earlier analysis (126 isolates) and have not been recomputed on the current cohort.*
 
 ## Abstract
 
@@ -152,8 +152,8 @@ For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one r
 
 ## Reproduction
 
-- This repo: `sbatch submit_validate.sbatch`, `python scripts/02_blast_reads.py`, `python scripts/03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65_refalign/`.
-- mlsa-kansasii: `scripts/04_locus_discovery.py` (+ `--exclude-atypical`), `submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/06_make_hsp65_references.py`), `scripts/10_sanger_vs_wgs.py`; outputs in `output/mlsa/`.
+- This repo: `sbatch submit_validate.sbatch`, `python scripts/02_blast_reads.py`, `python scripts/03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65-refalign/results/`.
+- mlsa-kansasii: `scripts/04_locus_discovery.py` (+ `--exclude-atypical`), `submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/06_make_hsp65_references.py`), `scripts/10_sanger_vs_wgs.py`; outputs in `output/mlsa-kansasii/results/`.
 - sanger-microsynth: `sanger_ms/call.py`, `main2_analyse_report/run_analyse_report.py`.
 - Run order and provenance: `kansasii-docs/README.md`.
 

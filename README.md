@@ -28,24 +28,24 @@ Every path is a constant of `kansasii_paths.py` (same name in all repos) and a f
 ## Run
 
 ```bash
-sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log goes to output/hsp65_refalign/logs/
+sbatch submit_validate.sbatch     # env_mlsa; about 15 min; log goes to output/hsp65-refalign/logs/
 python scripts/02_blast_reads.py  # login node is fine; SENDS two read sequences to NCBI BLAST (internet)
-python scripts/03_figure.py       # identity and margin per species -> output/hsp65_refalign/figures/ and article/figures/
+python scripts/03_figure.py       # identity and margin per species -> output/hsp65-refalign/results/figures/ and article/figures/
 sbatch submit_korean_check.sbatch # 04: Korean-type hsp65 check on the isolates' own assemblies
 sbatch submit_public.sbatch       # 05: persicum-like (Korean-type) hsp65 among GTDB-kansasii assemblies of the public BioProjects
-sbatch submit_public.sbatch ctl   # 05 positive control: 3 GTDB-persicum samples per project -> output/hsp65_refalign/public_ctl/ (expect 6 persicum, 3 atypical-kansasii)
-sbatch submit_public.sbatch persicum  # 05 on all 80 GTDB-persicum samples -> output/hsp65_refalign/public_persicum/ (hsp65 of samples whose gyrA is kansasii-like)
+sbatch submit_public.sbatch ctl   # 05 positive control: 3 GTDB-persicum samples per project -> output/hsp65-refalign/results/public_ctl/ (expect 6 persicum, 3 atypical-kansasii)
+sbatch submit_public.sbatch persicum  # 05 on all 80 GTDB-persicum samples -> output/hsp65-refalign/results/public_persicum/ (hsp65 of samples whose gyrA is kansasii-like)
 ```
 
 Environment: `env_mlsa` (`environment.yml`). `scripts/04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
 the three Korean GTDB kansasii genomes over every isolate's assembly and writes `korean_type_check.tsv` and
-`KOREAN_TYPE_SUMMARY.txt` to `output/hsp65_refalign/`.
+`KOREAN_TYPE_SUMMARY.txt` to `output/hsp65-refalign/results/`.
 
 `scripts/05_call_public.py` cuts the 441 bp hsp65 amplicon in silico (TB-11/TB-12w; `hsp65_refalign/insilico.py`) out of each
 `runs/public_<BioProject>/` assembly whose GTDB-Tk species is kansasii and classifies it against the 72 per-genome amplicons;
-it writes `insilico_public.tsv` and `SUMMARY.txt` to `output/hsp65_refalign/public/`.
+it writes `insilico_public.tsv` and `SUMMARY.txt` to `output/hsp65-refalign/results/public/`.
 
-`01` writes `output/hsp65_refalign/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
+`01` writes `output/hsp65-refalign/results/`: `reads.tsv` (one row per read), `isolates.tsv` (one row per isolate with
 its verdict), `SUMMARY.txt`, `nonmatching_reads.fa`. `02` writes `blast/` there (raw XML, `blast_hits.tsv`,
 `BLAST_SUMMARY.txt`). Paths are in `hsp65_refalign/kansasii_paths.py` (shared; root overridable with `KANSASII_ROOT`) and `hsp65_refalign/__init__.py` (`OUTPUT`, `OUTPUT_PUBLIC`).
 
@@ -87,5 +87,5 @@ unusable traces; that gave 125 analysed isolates and 16 no-calls.
 
 The samples whose hsp65 is persicum-like (Korean type) or belongs to another species than their genome, in the project (`korean_type_check.tsv`, `isolates.tsv`)
 and in the public BioProjects (`public/insilico_public.tsv`, `public_persicum/`), are collected together with the gyrA findings in
-`output/atypical_samples/atypical_samples.tsv` and explained in `kansasii-docs/docs/ATYPICAL.md`. In short: the Korean-type hsp65 is absent from the project
+`output/kansasii-docs/results/atypical_samples/atypical_samples.tsv` and explained in `kansasii-docs/docs/ATYPICAL.md`. In short: the Korean-type hsp65 is absent from the project
 isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 880 public GTDB-kansasii assemblies.

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# 04: Korean-type (persicum-like) hsp65 among the project isolates' own assemblies -> output/hsp65_refalign/korean_type_check.tsv
+# 04: Korean-type (persicum-like) hsp65 among the project isolates' own assemblies -> output/hsp65-refalign/results/korean_type_check.tsv
 #SBATCH --job-name=hsp65-korean-check
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
 #SBATCH --time=02:00:00
-#SBATCH --output=/shares/sander.imm.uzh/MM/kansasii/output/hsp65_refalign/logs/%x-%j.log
+#SBATCH --output=/shares/sander.imm.uzh/MM/kansasii/output/hsp65-refalign/logs/%x-%j.log
 
 set -euo pipefail
 source "${KANSASII_ROOT:-/shares/sander.imm.uzh/MM/kansasii}/repos/kansasii-docs/templates/kansasii_paths.sh"
 REPO=$REPOS/hsp65-refalign
-OUTPUT=$OUTPUT_ROOT/hsp65_refalign
+OUTPUT=$OUT_HSP65/results
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate env_mlsa
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Does plain reference alignment of the routine Sanger hsp65 reads identify the M. kansasii-complex
-species of every isolate? Truth = whole-genome (GTDB-Tk) species in output/screening_map_results.csv,
+species of every isolate? Truth = whole-genome (GTDB-Tk) species in output/immensekansasii/results/screening_map_results.csv,
 contaminated isolates excluded.
 
 Every hsp65 .ab1 in data/sanger/seq_kansasii is quality-trimmed, assigned to its isolate (PROBENNUMMER,
@@ -9,7 +9,7 @@ is the call (`ok`: >= 98% identity and >= 2 fewer differences than the next spec
 `ok` call are also aligned to the isolate's own assembly, to tell a read that does not match the
 sequenced genome (identity < 90%) from a merely poor one.
 
-Writes to output/hsp65_refalign/: reads.tsv, isolates.tsv, SUMMARY.txt, nonmatching_reads.fa
+Writes to output/hsp65-refalign/results/: reads.tsv, isolates.tsv, SUMMARY.txt, nonmatching_reads.fa
 (trimmed reads of the isolates whose reads do not match their own genome; input of 02_blast_reads.py).
 About 3 s per read plus 10 s per non-ok read: run as a job (submit_validate.sbatch).
 """

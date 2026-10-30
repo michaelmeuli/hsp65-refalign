@@ -6,7 +6,7 @@ identical to every kansasii-complex genome).
 Needs nonmatching_reads.fa from 01_validate_hsp65_refalign.py and internet access. SENDS THE READ
 SEQUENCES TO NCBI. Each query is the longest non-ok read of the named isolate.
 
-Writes to output/hsp65_refalign/blast/: <group>.query.fa, <group>.xml (raw NCBI result) and, for all
+Writes to output/hsp65-refalign/results/blast/: <group>.query.fa, <group>.xml (raw NCBI result) and, for all
 groups, blast_hits.tsv (top hits, one row per hit and group) and BLAST_SUMMARY.txt.
 Usage: python 02_blast_reads.py            # uses the groups below
        python 02_blast_reads.py --hits 20
