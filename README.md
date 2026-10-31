@@ -58,15 +58,21 @@ disagrees. Isolates with no `ok` read are **no call**. To say why, each non-`ok`
 isolate's own assembly: below 90% identity, the read does not come from that genome. Traces that are empty or
 < 100 bp after trimming count as unusable.
 
-## Result (rerun 2026-10-25; first run 2026-10-16)
+## Result (rerun 2026-10-31; earlier runs 2026-10-16 and 2026-10-25)
 
-See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 4 are contaminated
-(Mkan329-021, -035, -106, -113) and excluded, leaving 132. (The first run excluded only 035, 106 and 113: its
-output predated the change of the CheckM threshold from 10 % to 5 % on 2026-10-21, which made 021 contaminated; 021 had a
-correct call, so the numbers went from 109/133 to 108/132.)
+See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 4 are flagged for contamination
+(Mkan329-021, -035, -106, -113). They stay in the primary result, because a laboratory cannot know that a culture is
+mixed. (Earlier runs excluded them: the flag threshold changed from 10 % to 5 % CheckM contamination on 2026-10-21, which
+moved 021 into the flagged group, so the filtered numbers went from 109/133 to 108/132.)
 
-- **108 get a call and all 108 are correct** (0 wrong).
-- **24 get no call, so "every isolate with an hsp65 read is identified" does not hold:**
+- **110 of 136 are correct, 1 is WRONG, 25 get no call.** 111 isolates get a call.
+- **The one wrong call is Mkan329-035**, a kansasii/ostraviense mixed culture (CheckM 113 %): two `ok` reads
+  (99.4-99.5 %, margin 6) give ostraviense, the genome species is kansasii. Its secondary-peak fractions are 5.3 % and 2.1 %,
+  below the 10 % rule of `sanger-microsynth`, so that rule would not have flagged it. 021 and 106 are correct; 113 is a
+  no-call (six unusable reads).
+- **Sensitivity analysis, flagged isolates excluded** (`--exclude-contaminated` makes this the primary result): 108 of
+  132 correct, 0 wrong, 24 no call.
+- **The 25 no-calls mean "every isolate with an hsp65 read is identified" does not hold:**
   - **13: the read does not match the isolate's own genome** (~80% to every reference and ~75-80% to the
     isolate's assembly) although the trace is clean. These reads fall into two sequence groups
     (a 16-read group over 9 isolates, 2015-2026, 94-100% identical; a pair from Mkan329-007/-178). BLAST of
@@ -75,10 +81,10 @@ correct call, so the numbers went from 109/133 to 108/132.)
     genomes are clean (CheckM <= 3.3%) and their 16S/other reads match the complex species, so the hsp65 read
     is a contaminant read, not a wrong isolate. Only the two representatives were BLASTed; the other reads are
     assigned to a group by their identity to it.
-  - **10: all reads unusable** (empty or very short traces).
+  - **11: all reads unusable** (empty or very short traces; one of them is flagged isolate 113).
   - **1: poor reads** (Mkan329-102, persicum: four reads at 93-94%).
-- So the claim holds in the form: **no isolate with a usable hsp65 read of its own culture is misidentified**.
-  The routine fix for the 24 isolates without a call is to repeat the PCR (and for the Rothia ones,
+- So the claim holds in the form: **among isolates with a usable hsp65 read, only a mixed culture was misidentified**.
+  The routine fix for the 25 isolates without a call is to repeat the PCR (and for the Rothia ones,
   use a mycobacteria-specific primer pair or a fresh subculture).
 
 The earlier version of this repo read sanger_refalign's output, which was older than the linked reads and silently skips
