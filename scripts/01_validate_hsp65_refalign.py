@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Does plain reference alignment of the routine Sanger hsp65 reads identify the M. kansasii-complex
-species of every isolate? Truth = whole-genome (GTDB-Tk) species in output/immensekansasii/results/screening_map_results.csv,
-contaminated isolates excluded.
+species of every isolate? Truth = whole-genome (GTDB-Tk) species in output/immensekansasii/results/screening_map_results.csv.
+Isolates flagged for contamination stay in the primary result (a laboratory cannot know a culture is mixed); SUMMARY.txt
+adds the result without them as a sensitivity analysis, and --exclude-contaminated makes that the primary result.
 
 Every hsp65 .ab1 in data/sanger/seq_kansasii is quality-trimmed, assigned to its isolate (PROBENNUMMER,
 via all TNR columns) and aligned to one GTDB representative genome per species; the closest species
@@ -58,6 +59,16 @@ def verdict(d: pd.DataFrame, species: str) -> str:
     return "no call: poor read"
 
 
+def summarise(title: str, d: pd.DataFrame) -> list[str]:
+    called = d[d["n_ok"] > 0]
+    lines = [f"{title}: {len(d)} isolates"]
+    lines += [f"  {v}: {n}" for v, n in d["verdict"].value_counts().items()]
+    lines += [f"  isolates with a call: {len(called)}, correct: {(called['verdict'] == 'correct').sum()}",
+              "  by WGS species (correct / analysed): "
+              + ", ".join(f"{sp} {(g['verdict'] == 'correct').sum()}/{len(g)}" for sp, g in d.groupby("wgs_species"))]
+    return lines
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--gtdb-representatives", type=Path, default=GTDB_REPRESENTATIVES, help="one genome per species (references)")
@@ -65,6 +76,8 @@ def main() -> None:
     ap.add_argument("--screening-map-results", type=Path, default=SCREENING_MAP_RESULTS)
     ap.add_argument("--assemblies", type=Path, default=ASSEMBLIES, help="<isolate>/1_unicycler/<isolate>.fasta")
     ap.add_argument("--out", type=Path, default=OUTPUT)
+    ap.add_argument("--exclude-contaminated", action="store_true",
+                    help="make the result without contamination-flagged isolates the primary one (default: keep them)")
     args = ap.parse_args()
     out: Path = args.out
     out.mkdir(parents=True, exist_ok=True)
@@ -123,16 +136,20 @@ def main() -> None:
             if r["read"] in seqs:
                 fh.write(f">{r['probennummer']}|{r['read']}\n{seqs[r['read']]}\n")
 
+    flagged = iso[iso["contaminated"]]
     clean = iso[~iso["contaminated"]]
+    primary = clean if args.exclude_contaminated else iso
     lines = [f"isolates with a WGS species in the complex and >= 1 Sanger hsp65 read: {len(iso)}",
-             f"contaminated (excluded): {', '.join(iso[iso['contaminated']]['probennummer'])}",
-             f"analysed: {len(clean)}", ""]
-    lines += [f"  {v}: {n}" for v, n in clean["verdict"].value_counts().items()]
-    called = clean[clean["n_ok"] > 0]
-    lines += ["", f"isolates with a call: {len(called)}, correct: {(called['verdict'] == 'correct').sum()}",
-              "by WGS species (correct / analysed): "
-              + ", ".join(f"{sp} {(g['verdict'] == 'correct').sum()}/{len(g)}" for sp, g in clean.groupby("wgs_species"))]
-    nc = clean[clean["n_ok"] == 0]
+             f"flagged for contamination: {', '.join(flagged['probennummer'])}"
+             + (" (excluded)" if args.exclude_contaminated else " (kept in the primary result)"),
+             ""]
+    lines += summarise("primary result" + (" (flagged isolates excluded)" if args.exclude_contaminated else " (all isolates)"), primary)
+    if not args.exclude_contaminated:
+        lines += ["", *summarise("sensitivity analysis (flagged isolates excluded)", clean)]
+    lines += ["", "flagged isolates:"]
+    lines += [f"  {r.probennummer} ({r.wgs_species}, called: {str(r.called_species) or '-'}): {r.n_ok}/{r.n_hsp65_reads} ok reads -> {r.verdict}"
+              for r in flagged.itertuples()]
+    nc = primary[primary["n_ok"] == 0]
     if len(nc):
         lines += ["", "isolates without a call:"]
         lines += [f"  {r.probennummer} ({r.wgs_species}): {r.n_hsp65_reads} reads, best identity to references {r.best_identity}%, "

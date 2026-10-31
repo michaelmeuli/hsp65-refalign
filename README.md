@@ -2,7 +2,8 @@
 
 **Question:** does plain reference alignment of the routine Sanger hsp65 reads (`mlsa-kansasii`
 `sanger_refalign`) identify the *M. kansasii*-complex species of every isolate that has such a
-read, once contaminated isolates are excluded?
+read? Isolates flagged for contamination stay in the primary result; the result without them is reported as a
+sensitivity analysis (`--exclude-contaminated` makes it the primary one).
 
 **Truth:** the whole-genome species (GTDB-Tk) in `data/imm/screening_map_results.csv` (`SCREENING_MAP_RESULTS`). **Reads:** every hsp65
 `.ab1` in `data/sanger/seq_kansasii` (made by `mlsa-kansasii/scripts/03_link_sanger_kansasii.sh`), assigned

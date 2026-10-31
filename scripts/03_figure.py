@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Figure: identity to the closest reference (A) and margin to the next species (B) of every hsp65 read,
-per genome species. Reads of uncontaminated isolates only; reads that are `ok` are coloured by species, the
+per genome species. Reads of all isolates (--exclude-contaminated: uncontaminated only). Reads that are `ok` are coloured by species, the
 others (failed, contaminant or poor reads) are grey in A. Dashed lines are the calling thresholds
 (98% identity, 2 differences). Needs reads.tsv from 01_validate_hsp65_refalign.py.
 
@@ -36,9 +36,12 @@ def jitter(n: int, seed: int) -> np.ndarray:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, default=OUTPUT, help="hsp65_refalign output dir (reads.tsv in, figures/ out)")
+    ap.add_argument("--exclude-contaminated", action="store_true", help="plot reads of uncontaminated isolates only")
     args = ap.parse_args()
     r = pd.read_csv(args.out / "reads.tsv", sep="\t")
-    r = r[~r["contaminated"] & r["closest_identity"].notna()]
+    if args.exclude_contaminated:
+        r = r[~r["contaminated"]]
+    r = r[r["closest_identity"].notna()]
     species = [s for s in SPECIES if (r["wgs_species"] == s).any()]
     ok = r[r["status"] == "ok"]
     other = r[r["status"] != "ok"]
