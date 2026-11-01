@@ -83,7 +83,8 @@ def main() -> None:
     b.set_title("B  Margin (ok reads)", loc="left", fontsize=10, color=INK, fontweight="bold")
     a.scatter([], [], s=22, facecolors="none", edgecolors="#9a9a9a", label=f"not ok ({len(other)} reads)")
     a.scatter([], [], s=22, color=INK, label=f"ok ({len(ok)} reads)")
-    a.legend(frameon=False, fontsize=8, loc="center left", bbox_to_anchor=(0.0, 0.55))
+    handles, leg_labels = a.get_legend_handles_labels()
+    fig.legend(handles, leg_labels, frameon=False, fontsize=8, loc="outside lower center", ncol=2)  # outside both axes
 
     out = args.out / "figures"
     out.mkdir(exist_ok=True)
