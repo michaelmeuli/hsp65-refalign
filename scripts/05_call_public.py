@@ -21,7 +21,8 @@ from Bio import SeqIO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
 
-from hsp65_refalign import OUTPUT_PUBLIC  # noqa: E402
+from hsp65_refalign import OUTPUT_PUBLIC, PUBLIC_MAX_CONTAMINATION  # noqa: E402
+from hsp65_refalign.checkm import checkm_contamination  # noqa: E402
 from hsp65_refalign.insilico import in_silico_pcr  # noqa: E402
 from hsp65_refalign.kansasii_paths import HSP65_AMPLICONS, PUBLIC_PROJECTS, SPECIES, public_assemblies  # noqa: E402
 from hsp65_refalign.refalign import identify_read, load_references  # noqa: E402
@@ -46,15 +47,26 @@ def main() -> None:
     ap.add_argument("--limit", type=int, help="only the first N samples per project (test)")
     ap.add_argument("--species", default=GTDB_KANSASII, help="GTDB species to analyse (default kansasii)")
     ap.add_argument("--hsp65-amplicons", type=Path, default=HSP65_AMPLICONS, help="reference amplicons of the 72 genomes")
+    ap.add_argument("--max-contamination", type=float, default=PUBLIC_MAX_CONTAMINATION,
+                    help="CheckM contamination (%%) above which a sample is left out of all results (written to excluded_contaminated.tsv)")
     ap.add_argument("--out", type=Path, default=OUTPUT_PUBLIC)
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
     refs = load_references(args.hsp65_amplicons, SPECIES)
     rows: list[dict[str, object]] = []
+    excluded: list[dict[str, str]] = []
     for proj in args.projects:
         species = gtdb_species(proj)
-        todo = [s for s, sp in species.items() if sp == args.species]
+        todo: list[str] = []
+        for smp, sp in species.items():
+            if sp != args.species:
+                continue
+            contam = checkm_contamination(public_assemblies(proj), smp)
+            if contam is not None and contam > args.max_contamination:
+                excluded.append({"sample": smp, "bioproject": proj, "gtdb_species": sp, "checkm_contamination": f"{contam:.2f}"})
+            else:
+                todo.append(smp)  # a sample without a CheckM result is kept
         print(f"{proj}: {len(species)} with GTDB call, {len(todo)} {args.species}", flush=True)
         for sid in todo[:args.limit]:
             f = public_assemblies(proj) / sid / "1_unicycler" / f"{sid}.fasta"
@@ -75,6 +87,8 @@ def main() -> None:
             print(row, flush=True)
 
     df = pd.DataFrame(rows)
+    pd.DataFrame(excluded, columns=["sample", "bioproject", "gtdb_species", "checkm_contamination"]).to_csv(
+        args.out / "excluded_contaminated.tsv", sep="\t", index=False)
     for c in ("status", "closest_species", "atypical", "second_species"):
         if c not in df:
             df[c] = None
@@ -82,7 +96,8 @@ def main() -> None:
     df.to_csv(args.out / "insilico_public.tsv", sep="\t", index=False)
 
     found = df[df["amplicon_bp"] > 0]
-    lines = [f"{args.species} samples analysed: {len(df)}; hsp65 amplicon found in {len(found)}, no amplicon in {len(df) - len(found)}", ""]
+    lines = [f"{args.species} samples analysed: {len(df)} (CheckM contamination <= {args.max_contamination} %; left out as contaminated: {len(excluded)}, "
+             f"see excluded_contaminated.tsv); hsp65 amplicon found in {len(found)}, no amplicon in {len(df) - len(found)}", ""]
     lines.append("closest hsp65 reference (all samples with amplicon):")
     for label, mask in (("kansasii (typical)", (found["closest_species"] == "kansasii") & (found["atypical"] != True)),  # noqa: E712
                         ("kansasii, atypical (persicum-like) hsp65 genome", found["atypical"] == True),  # noqa: E712

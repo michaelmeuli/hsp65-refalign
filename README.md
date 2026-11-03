@@ -35,7 +35,7 @@ python scripts/03_figure.py       # identity and margin per species -> output/hs
 sbatch submit_korean_check.sbatch # 04: Korean-type hsp65 check on the isolates' own assemblies
 sbatch submit_public.sbatch       # 05: persicum-like (Korean-type) hsp65 among GTDB-kansasii assemblies of the public BioProjects
 sbatch submit_public.sbatch ctl   # 05 positive control: 3 GTDB-persicum samples per project -> output/hsp65-refalign/results/public_ctl/ (expect 6 persicum, 3 atypical-kansasii)
-sbatch submit_public.sbatch persicum  # 05 on all 80 GTDB-persicum samples -> output/hsp65-refalign/results/public_persicum/ (hsp65 of samples whose gyrA is kansasii-like)
+sbatch submit_public.sbatch persicum  # 05 on all 78 GTDB-persicum samples -> output/hsp65-refalign/results/public_persicum/ (hsp65 of samples whose gyrA is kansasii-like)
 ```
 
 Environment: `env_mlsa` (`environment.yml`). `scripts/04_korean_type_check.py` lays the 441 bp hsp65 amplicon of
@@ -95,4 +95,4 @@ unusable traces; that gave 125 analysed isolates and 16 no-calls.
 The samples whose hsp65 is persicum-like (Korean type) or belongs to another species than their genome, in the project (`korean_type_check.tsv`, `isolates.tsv`)
 and in the public BioProjects (`public/insilico_public.tsv`, `public_persicum/`), are collected together with the gyrA findings in
 `output/kansasii-docs/results/atypical_samples/atypical_samples.tsv` and explained in `kansasii-docs/docs/ATYPICAL.md`. In short: the Korean-type hsp65 is absent from the project
-isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 880 public GTDB-kansasii assemblies.
+isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 857 public GTDB-kansasii assemblies (public samples with CheckM contamination above 5 % are left out of 05, `excluded_contaminated.tsv`).
