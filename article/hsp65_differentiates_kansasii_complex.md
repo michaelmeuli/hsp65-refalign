@@ -154,7 +154,7 @@ For the *M. kansasii* complex, a single good hsp65 Sanger read, aligned to one r
 
 - This repo: `sbatch submit_validate.sbatch`, `python scripts/02_blast_reads.py`, `python scripts/03_figure.py`, `sbatch submit_korean_check.sbatch`, `sbatch submit_public.sbatch` (and `ctl` for the persicum control); outputs in `output/hsp65-refalign/results/`.
 - mlsa-kansasii: `scripts/04_locus_discovery.py` (+ `--exclude-atypical`), `submit_hsp65_amplicon_alignment.sbatch` (references from `scripts/06_make_hsp65_references.py`), `scripts/10_sanger_vs_wgs.py`; outputs in `output/mlsa-kansasii/results/`.
-- sanger-microsynth: `sanger_ms/call.py`, `main2_analyse_report/run_analyse_report.py`.
+- sanger-microsynth: `sanger_ms/call.py`, `scripts/02_analyse_report.py`.
 - Run order and provenance: `kansasii-docs/README.md`.
 
 ## References
