@@ -58,17 +58,16 @@ disagrees. Isolates with no `ok` read are **no call**. To say why, each non-`ok`
 isolate's own assembly: below 90% identity, the read does not come from that genome. Traces that are empty or
 < 100 bp after trimming count as unusable.
 
-## Result (rerun 2026-10-31; earlier runs 2026-10-16 and 2026-10-25)
+## Result (run 2026-11-03)
 
 See `SUMMARY.txt` for the current numbers. 136 complex isolates have an hsp65 read; 4 are flagged for contamination
 (Mkan329-021, -035, -106, -113). They stay in the primary result, because a laboratory cannot know that a culture is
-mixed. (Earlier runs excluded them: the flag threshold changed from 10 % to 5 % CheckM contamination on 2026-10-21, which
-moved 021 into the flagged group, so the filtered numbers went from 109/133 to 108/132.)
+mixed.
 
 - **110 of 136 are correct, 1 is WRONG, 25 get no call.** 111 isolates get a call.
 - **The one wrong call is Mkan329-035**, a kansasii/ostraviense mixed culture (CheckM 113 %): two `ok` reads
   (99.4-99.5 %, margin 6) give ostraviense, the genome species is kansasii. Its secondary-peak fractions are 5.3 % and 2.1 %,
-  below the 10 % rule of `sanger-microsynth`, so that rule would not have flagged it. 021 and 106 are correct; 113 is a
+  below the 10 % rule of `sanger-microsynth`, so that rule does not flag it. 021 and 106 are correct; 113 is a
   no-call (six unusable reads).
 - **Sensitivity analysis, flagged isolates excluded** (`--exclude-contaminated` makes this the primary result): 108 of
   132 correct, 0 wrong, 24 no call.
@@ -83,12 +82,9 @@ moved 021 into the flagged group, so the filtered numbers went from 109/133 to 1
     assigned to a group by their identity to it.
   - **11: all reads unusable** (empty or very short traces; one of them is flagged isolate 113).
   - **1: poor reads** (Mkan329-102, persicum: four reads at 93-94%).
-- So the claim holds in the form: **among isolates with a usable hsp65 read, only a mixed culture was misidentified**.
+- So the claim holds in the form: **among isolates with a usable hsp65 read, only a mixed culture is misidentified**.
   The routine fix for the 25 isolates without a call is to repeat the PCR (and for the Rothia ones,
   use a mycobacteria-specific primer pair or a fresh subculture).
-
-The earlier version of this repo read sanger_refalign's output, which was older than the linked reads and silently skips
-unusable traces; that gave 125 analysed isolates and 16 no-calls.
 
 ## Atypical hsp65
 

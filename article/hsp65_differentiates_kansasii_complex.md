@@ -134,7 +134,7 @@ Forward and reverse reads (TB-11 / TB-12w) are paired by sample number and locus
 
 ### 5.3 Earlier analysis on 126 isolates (2026-10-09)
 
-Before the resequenced isolates were added, the same questions were run on 126 genome-typed isolates, 92 with a routine hsp65 read (mlsa-kansasii `locus_discovery` to `sanger_vs_wgs`, formerly main1 to main4). Not recomputed; shown because it adds two points the current analysis does not cover.
+Before the resequenced isolates were added, the same questions were run on 126 genome-typed isolates, 92 with a routine hsp65 read (mlsa-kansasii `locus_discovery` to `sanger_vs_wgs`). Not recomputed; shown because it adds two points the current analysis does not cover.
 
 | Method (92 isolates with a read) | Called | Correct | No call |
 |---|---|---|---|
