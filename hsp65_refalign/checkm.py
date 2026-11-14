@@ -1,4 +1,4 @@
-"""CheckM contamination of the public samples (same rule as gyrA-refalign: above PUBLIC_MAX_CONTAMINATION a sample is left out)."""
+"""CheckM contamination of the public samples (same rule as gyrA-refalign: above kansasii_paths.MAX_CHECKM_CONTAMINATION a sample is left out)."""
 from __future__ import annotations
 
 import re

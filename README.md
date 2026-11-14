@@ -91,4 +91,4 @@ mixed.
 The samples whose hsp65 is persicum-like (Korean type) or belongs to another species than their genome, in the project (`korean_type_check.tsv`, `isolates.tsv`)
 and in the public BioProjects (`public/insilico_public.tsv`, `public_persicum/`), are collected together with the gyrA findings in
 `output/kansasii-docs/results/atypical_samples/atypical_samples.tsv` and explained in `kansasii-docs/docs/ATYPICAL.md`. In short: the Korean-type hsp65 is absent from the project
-isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 857 public GTDB-kansasii assemblies (public samples with CheckM contamination above 5 % are left out of 05, `excluded_contaminated.tsv`).
+isolates (`korean_type` is defined for genome-kansasii isolates only) and occurs in 1 of 855 public GTDB-kansasii assemblies (public samples with CheckM contamination above 5 % are left out of 05, `excluded_contaminated.tsv`).

@@ -21,10 +21,10 @@ from Bio import SeqIO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root: the hsp65_refalign package
 
-from hsp65_refalign import OUTPUT_PUBLIC, PUBLIC_MAX_CONTAMINATION  # noqa: E402
+from hsp65_refalign import OUTPUT_PUBLIC  # noqa: E402
 from hsp65_refalign.checkm import checkm_contamination  # noqa: E402
 from hsp65_refalign.insilico import in_silico_pcr  # noqa: E402
-from hsp65_refalign.kansasii_paths import HSP65_AMPLICONS, PUBLIC_PROJECTS, SPECIES, public_assemblies  # noqa: E402
+from hsp65_refalign.kansasii_paths import HSP65_AMPLICONS, MAX_CHECKM_CONTAMINATION, PUBLIC_PROJECTS, SPECIES, public_assemblies  # noqa: E402
 from hsp65_refalign.refalign import identify_read, load_references  # noqa: E402
 
 GTDB_KANSASII = "s__Mycobacterium kansasii"
@@ -47,7 +47,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int, help="only the first N samples per project (test)")
     ap.add_argument("--species", default=GTDB_KANSASII, help="GTDB species to analyse (default kansasii)")
     ap.add_argument("--hsp65-amplicons", type=Path, default=HSP65_AMPLICONS, help="reference amplicons of the 72 genomes")
-    ap.add_argument("--max-contamination", type=float, default=PUBLIC_MAX_CONTAMINATION,
+    ap.add_argument("--max-contamination", type=float, default=MAX_CHECKM_CONTAMINATION,
                     help="CheckM contamination (%%) above which a sample is left out of all results (written to excluded_contaminated.tsv)")
     ap.add_argument("--out", type=Path, default=OUTPUT_PUBLIC)
     args = ap.parse_args()
